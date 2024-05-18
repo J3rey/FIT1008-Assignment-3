@@ -1,6 +1,4 @@
 from landsites import Land
-from data_structures.heap import MaxHeap
-
 
 class Mode1Navigator:
     """
@@ -9,13 +7,11 @@ class Mode1Navigator:
 
     def __init__(self, sites: list[Land], adventurers: int) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Best Case is O(1)...
+        Worst Case is O(n)...
         """
-        self.heap = MaxHeap(len(sites))  # Initialize the max heap with the size of a given sites list
-        self.adventurers = adventurers  
-
-        for site in sites:
-            self.heap.add(site)  # Adds each Land object to the max heap
+        self.sites = sites
+        self.adventurers = adventurers
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
@@ -25,7 +21,7 @@ class Mode1Navigator:
         remaining_adventurers = self.adventurers
 
         # Calculate the number of adventurers to send to each land site
-        num_sites = len(self.heap)
+        num_sites = len(self.sites)
         if num_sites == 0:
             return selected_sites
 
@@ -33,8 +29,7 @@ class Mode1Navigator:
         extra_adventurers = remaining_adventurers % num_sites
 
         # Select sites and assign adventurers
-        while len(self.heap) > 0:
-            site = self.heap.get_max()
+        for i, site in enumerate(self.sites):
             if extra_adventurers > 0:
                 assigned_adventurers = adventurers_per_site + 1
                 extra_adventurers -= 1
@@ -42,7 +37,6 @@ class Mode1Navigator:
                 assigned_adventurers = adventurers_per_site
             
             selected_sites.append((site, assigned_adventurers))
-            remaining_adventurers -= assigned_adventurers
 
         return selected_sites
 
@@ -52,18 +46,32 @@ class Mode1Navigator:
         """
         rewards = []
         
+        # Iterate over each configuration of adventurer numbers
         for num_adventurers in adventure_numbers:
-            max_reward = 0
-            for site in self.sites:
-                reward = min((num_adventurers * site.reward) / site.guardians, site.reward)
-                max_reward = max(max_reward, reward)
-            rewards.append(max_reward)
-        
+            total_reward = 0
+            remaining_adventurers = num_adventurers
+            
+            # Sort sites by gold in descending order
+            sorted_sites = sorted(self.sites, key=lambda site: site.gold, reverse=True)
+            
+            # Allocate adventurers to sites to maximize reward
+            for site in sorted_sites:
+                if remaining_adventurers > 0:
+                    total_reward += site.gold
+                    remaining_adventurers -= 1
+                else:
+                    break
+
+            rewards.append(total_reward)
+
         return rewards
 
     def update_site(self, land: Land, new_reward: float, new_guardians: int) -> None:
         """
         Student-TODO: Best/Worst Case
         """
-        land.reward = new_reward
-        land.guardians = new_guardians
+        for site in self.sites:
+            if site.name == land.name:
+                site.set_gold(new_reward)
+                site.set_guardians(new_guardians)
+                break

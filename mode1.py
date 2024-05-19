@@ -10,15 +10,21 @@ class Mode1Navigator:
 
     def __init__(self, sites: list[Land], adventurers: int) -> None:
         """
-        Best Case is O(1)...
-        Worst Case is O(n)...
+        Best Case is O(1) if one or no landsites were added
+        Worst Case is O(N*log(N)) where N is the number of land sites and log(N) is the complexity per insertion operation in a heap
         """
         self.sites = sites
         self.adventurers = adventurers
+        self.site_heap = MaxHeap(len(sites))
+
+        for site in sites:
+            ratio = site.get_gold() / site.get_guardians()
+            self.site_heap.add((ratio, site))
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
-        Student-TODO: Best/Worst Case
+        Best Case is O(log(N)) where N is the number of land sites, as...
+        Worst Case is O(N) where N is the number of land sites, as...
         """
         #less test cases, but correct complexities
         selected_sites = []
@@ -84,8 +90,13 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        for site in self.sites:
-            if site.name == land.name:
-                site.set_gold(new_reward)
-                site.set_guardians(new_guardians)
-                break
+        index = self.site_heap.index_map.get(land.name)
+        if index is not None:
+            # Update the site’s reward and guardians
+            self.sites[index - 1].set_gold(new_reward)
+            self.sites[index - 1].set_guardians(new_guardians)
+            new_ratio = new_reward / new_guardians
+
+            # Update the element in the heap and re-adjust
+            self.site_heap.update_element(index, (new_ratio, self.sites[index - 1]))
+

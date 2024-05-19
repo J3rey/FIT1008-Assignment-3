@@ -23,38 +23,22 @@ class Mode1Navigator:
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
-        Best Case is O(log(N)) where N is the number of land sites, as...
-        Worst Case is O(N) where N is the number of land sites, as...
+        Best Case is O(log(N)) where N is the number of land sites, as when the initial number of 
+        adventurers is less than or equal to the guardians of the first/best site, only one extraction 
+        and allocation is needed. log(N) is the height of the heap and the sinking operation takes
+        O(log(N)) time.
+        Worst Case is O(N) where N is the number of land sites, as when all the the adventurers 
+        have to be distributed linearly across multiple sites until all adventurers are distributed
         """
         #less test cases, but correct complexities
         selected_sites = []
-        num_sites = len(self.sites)
-        if num_sites == 0:
-            return selected_sites
-
         remaining_adventurers = self.adventurers
-        heap = MaxHeap(num_sites)
 
-        # Add all sites to the heap
-        for site in self.sites:
-            ratio = site.get_gold() / site.get_guardians()
-            heap.add((ratio, site))
-
-        # Extract the best site (site with the highest gold-to-guardians ratio)
-        if remaining_adventurers > 0 and len(heap) > 0:
-            _, best_site = heap.get_max()
+        while remaining_adventurers > 0 and len(self.site_heap) > 0:
+            # Extract the best site (site with the highest gold-to-guardians ratio)
+            _, best_site = self.site_heap.get_max()
             max_adventurers_for_site = min(best_site.get_guardians(), remaining_adventurers)
             selected_sites.append((best_site, max_adventurers_for_site))
-            remaining_adventurers -= max_adventurers_for_site
-
-        # Process remaining sites linearly
-        for site in self.sites:
-            if remaining_adventurers == 0:
-                break
-            if site == best_site:
-                continue
-            max_adventurers_for_site = min(site.get_guardians(), remaining_adventurers)
-            selected_sites.append((site, max_adventurers_for_site))
             remaining_adventurers -= max_adventurers_for_site
 
         return selected_sites

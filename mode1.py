@@ -1,9 +1,6 @@
 from landsites import Land
 from data_structures.heap import MaxHeap
 
-
-
-
 class Mode1Navigator:
     """
     Student-TODO: short paragraph as per
@@ -83,19 +80,16 @@ class Mode1Navigator:
         as locating the element takes O(N) and re-heapifying takes O(log(N)).
         ## INCORRECT COMPLEXITIES WORKS THOUGH
         """
-        index = None
         for i in range(1, self.site_heap.length + 1):
             if self.site_heap.the_array[i][1].get_name() == land.get_name():
-                index = i
+                # Update the site’s reward and guardians
+                self.site_heap.the_array[i][1].set_gold(new_reward)
+                self.site_heap.the_array[i][1].set_guardians(new_guardians)
+                new_ratio = new_reward / new_guardians
+
+                # Adjust the heap manually
+                self.site_heap.the_array[i] = (new_ratio, self.site_heap.the_array[i][1])
+                self.site_heap.rise(i)
+                self.site_heap.sink(i)
                 break
 
-        if index is not None:
-            # Update the site’s reward and guardians
-            self.site_heap.the_array[index][1].set_gold(new_reward)
-            self.site_heap.the_array[index][1].set_guardians(new_guardians)
-            new_ratio = new_reward / new_guardians
-
-            # Adjust the heap manually
-            self.site_heap.the_array[index] = (new_ratio, self.site_heap.the_array[index][1])
-            self.site_heap.rise(index)
-            self.site_heap.sink(index)

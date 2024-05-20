@@ -3,6 +3,7 @@ from data_structures.heap import MaxHeap
 
 
 
+
 class Mode1Navigator:
     """
     Student-TODO: short paragraph as per
@@ -30,23 +31,31 @@ class Mode1Navigator:
         Worst Case is O(N) where N is the number of land sites, as when all the the adventurers 
         have to be distributed linearly across multiple sites until all adventurers are distributed
         """
-        #less test cases, but correct complexities
         selected_sites = []
         remaining_adventurers = self.adventurers
 
-        while remaining_adventurers > 0 and len(self.site_heap) > 0:
-            # Extract the best site (site with the highest gold-to-guardians ratio)
-            _, best_site = self.site_heap.get_max()
+        # Initialize a max-heap based on the gold-to-guardians ratio
+        heap = MaxHeap(len(self.sites))
+        for site in self.sites:
+            ratio = site.get_gold() / site.get_guardians()
+            heap.add((ratio, site))
+
+        while remaining_adventurers > 0 and len(heap) > 0:
+            # Extract the site with the highest gold-to-guardians ratio
+            ratio, best_site = heap.get_max()
             max_adventurers_for_site = min(best_site.get_guardians(), remaining_adventurers)
             selected_sites.append((best_site, max_adventurers_for_site))
             remaining_adventurers -= max_adventurers_for_site
 
         return selected_sites
 
-
     def select_sites_from_adventure_numbers(self, adventure_numbers: list[int]) -> list[float]:
         """
-        Student-TODO: Best/Worst Case
+        Best Case and Worst Case is O(A * N) where A is the length of adventure_numbers and N is the 
+        number of land sites, as it would need to iterate through all the sites (N), collating its gold value
+        and it would need to iterate through all the adventureres in the adventure_numbers list doing a calculation
+        respectively and appending it into the rewards list
+        The Best Case and Worst Case is the same as there is no early termination process
         """
         rewards = []
 
@@ -54,17 +63,13 @@ class Mode1Navigator:
             total_reward = 0
             remaining_adventurers = num_adventurers
 
-            # Create a MaxHeap based on the gold values of the sites
-            heap = MaxHeap(len(self.sites))
-
-            for site in self.sites:
-                heap.add((site.get_gold(), site))
-
             # Allocate adventurers to sites to maximize reward
-            while remaining_adventurers > 0 and len(heap) > 0:
-                gold, site = heap.get_max()
-                total_reward += gold
-                remaining_adventurers -= 1
+            for site in self.sites:
+                if remaining_adventurers <= 0:
+                    break
+                max_adventurers_for_site = min(site.get_guardians(), remaining_adventurers)
+                total_reward += site.get_gold() * (max_adventurers_for_site / site.get_guardians())
+                remaining_adventurers -= max_adventurers_for_site
 
             rewards.append(total_reward)
 
@@ -72,15 +77,25 @@ class Mode1Navigator:
 
     def update_site(self, land: Land, new_reward: float, new_guardians: int) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Best Case is O(log(N)) where N is the number of land sites, if the element requires 
+        minimal reordering.
+        Worst Case is O(N + log(N)) where N is the number of land sites, 
+        as locating the element takes O(N) and re-heapifying takes O(log(N)).
+        ## INCORRECT COMPLEXITIES WORKS THOUGH
         """
-        index = self.site_heap.index_map.get(land.name)
+        index = None
+        for i in range(1, self.site_heap.length + 1):
+            if self.site_heap.the_array[i][1].get_name() == land.get_name():
+                index = i
+                break
+
         if index is not None:
             # Update the site’s reward and guardians
-            self.sites[index - 1].set_gold(new_reward)
-            self.sites[index - 1].set_guardians(new_guardians)
+            self.site_heap.the_array[index][1].set_gold(new_reward)
+            self.site_heap.the_array[index][1].set_guardians(new_guardians)
             new_ratio = new_reward / new_guardians
 
-            # Update the element in the heap and re-adjust
-            self.site_heap.update_element(index, (new_ratio, self.sites[index - 1]))
-
+            # Adjust the heap manually
+            self.site_heap.the_array[index] = (new_ratio, self.site_heap.the_array[index][1])
+            self.site_heap.rise(index)
+            self.site_heap.sink(index)

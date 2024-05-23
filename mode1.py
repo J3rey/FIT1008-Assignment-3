@@ -32,7 +32,7 @@ class Mode1Navigator:
         selected_sites = [] # Initialise an empty list to store [land and adventurers]
         remaining_adventurers = self.adventurers
 
-        heap = MaxHeap(len(self.sites)) # Initialises another Maxheap 
+        heap = MaxHeap(len(self.sites)) # Initialises another Maxheap to ensure that the original list of sites remain unchanged
         for site in self.sites:
             ratio = site.get_gold() / site.get_guardians()
             heap.add((ratio, site))
@@ -47,48 +47,25 @@ class Mode1Navigator:
 
     def select_sites_from_adventure_numbers(self, adventure_numbers: list[int]) -> list[float]:
         """
-        Best Case and Worst Case is O(A * N) where A is the length of adventure_numbers and N is the 
-        number of land sites, as it would need to iterate through all the sites (N), collating its gold value
-        and it would need to iterate through all the adventureres in the adventure_numbers list doing a calculation
-        respectively and appending it into the rewards list
-        The Best Case and Worst Case is the same as there is no early termination process
+        Both best and worst case O(A * N) where A is the length of adventure_numbers and N is the number 
+        of sites, as it has to loop through all the sites and adventurers.
+        As there is no early termination process the best and worst case are the same
         """
-        rewards = []
+        rewards = [] # Initialise an empty list to store the rewards
 
-        for num_adventurers in adventure_numbers:
-            total_reward = 0
-            remaining_adventurers = num_adventurers
+        for num_of_adventurers in adventure_numbers: # For each number of adventurers in adventure_numbers
+            self.adventurers = num_of_adventurers # set adventurers as the current number of adventurers in adventurenumbers
+            calculated_reward = 0
+            for site, adventurers_sent in self.select_sites(): # For each site that had already been distributed the number of adventurers 
+                calculated_reward += min(adventurers_sent * site.get_gold() / site.get_guardians(), site.get_gold()) # Calculate the reward from the current site and add it to the total reward for configuration
+            rewards.append(calculated_reward) # Append the calculated rewards onto rewards list
 
-            # Allocate adventurers to sites to maximize reward
-            for site in self.sites:
-                if remaining_adventurers <= 0:
-                    break
-                max_adventurers_for_site = min(site.get_guardians(), remaining_adventurers)
-                total_reward += site.get_gold() * (max_adventurers_for_site / site.get_guardians())
-                remaining_adventurers -= max_adventurers_for_site
-
-            rewards.append(total_reward)
-
-        return rewards
+        return rewards # Return list of calculated rewards
 
     def update_site(self, land: Land, new_reward: float, new_guardians: int) -> None:
         """
-        Best Case is O(log(N)) where N is the number of land sites, if the element requires 
-        minimal reordering.
-        Worst Case is O(N + log(N)) where N is the number of land sites, 
-        as locating the element takes O(N) and re-heapifying takes O(log(N)).
-        ## INCORRECT COMPLEXITIES WORKS THOUGH
+        Best and Worst Case is O(1) as it updates the new reward and guardian value of the site in constant time
         """
-        for i in range(1, self.site_heap.length + 1):
-            if self.site_heap.the_array[i][1].get_name() == land.get_name():
-                # Update the site’s reward and guardians
-                self.site_heap.the_array[i][1].set_gold(new_reward)
-                self.site_heap.the_array[i][1].set_guardians(new_guardians)
-                new_ratio = new_reward / new_guardians
-
-                # Adjust the heap manually
-                self.site_heap.the_array[i] = (new_ratio, self.site_heap.the_array[i][1])
-                self.site_heap.rise(i)
-                self.site_heap.sink(i)
-                break
+        land.set_gold(new_reward) # Update selected site with new reward am
+        land.set_guardians(new_guardians) # Update selected site with new guardian am
 

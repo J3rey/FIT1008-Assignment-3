@@ -30,8 +30,8 @@ class Mode1Navigator:
     - For `update_site`: Updating land site A from 400 gold and 100 guardians to 500 gold and 50 
     guardians will change its priority in the heap and impact the site selection process accordingly.
 
-    - Complexity Explanations:
-        - Explained in each functions
+    Complexity Explanations:
+    - Explained in each functions
     """
 
     def __init__(self, sites: list[Land], adventurers: int) -> None:

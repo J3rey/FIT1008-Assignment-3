@@ -3,7 +3,34 @@ from data_structures.heap import MaxHeap
 
 class Mode2Navigator:
     """
-    Student-TODO: short paragraph as per
+    Mode2Navigator class manages a number of teams with the same number of adventurers
+    competing to accumulate the largest score.
+    It stimulates a day where each team selects a land site to maximise their score.
+    The scores are calculated with the remaining number of adventurers and the gold collected
+    from a land site.
+
+    Data Structures and Data Types Used:
+
+    - I used a list data structure to store the list of all the lands that were provided in intialization as this would 
+    store each land and allow the stats of each site to be accessible
+    - I used a Maxheap data structure to maintain the land sites based on the calculated scores, this allows easy access 
+    of the site with the highest score as it would be at the root which can be called with getMax()
+    - I used a uple data type to pair the score, remaining adventurers and reward gained with the corresponding site
+    to allow heap manipulation to be done 
+
+    Small Examples:
+    - For `simulate_day`:
+    Given 3 land sites with ratios 4 (400 gold, 100 guardians), 2 (300 gold, 150 guardians), and 1 (100 gold, 100 guardians), and 3 teams with 100 adventurers each:
+        - The first team will select the site with a ratio of 4, sending 100 adventurers and collecting 400 gold.
+        - The second team will select the site with a ratio of 2, sending 100 adventurers and collecting 200 gold.
+        - The third team will select the site with a ratio of 1, sending 100 adventurers and collecting 100 gold.
+    If a new site with a ratio of 6 (600 gold, 100 guardians) is added, the next team will prioritize this site over the existing ones.
+    
+    - For `add_sites`: If a site with 900 gold and 150 guardians is added to the self.sites (a list), it will add this new site into the heap
+    maintaining the heap order that is based on largest score
+
+    Complexity Explanations:
+    - Explained in each functions
     """
 
     def __init__(self, n_teams: int) -> None:

@@ -3,7 +3,35 @@ from data_structures.heap import MaxHeap
 
 class Mode1Navigator:
     """
-    Student-TODO: short paragraph as per
+    Mode1Navigator class manages and allocates adventurers to different land sites based on a 
+    gold-to-guardian ratio, determining that max rewards for a given amount of adventurers.
+    This was done by using a max-heap data structure to prioritze land sites with the highest amount of
+    reward,
+
+    Data Structures and Data Types Used:
+    - I used a list data structure to store the list of all the lands that were provided in intialization as this would 
+    store each land and allow the stats of each site to be accessible
+    - I used a Maxheap data structure to maintain the land sites on the gold-to-guardian ratio, therefore the highest
+    ratio would always be the root and be easily accessible with the getMax() function
+    - I used the tuple data type to pair the ratio with the corresponding site
+
+    Small Examples:
+    - For `select_sites`: Given 2 land sites with ratios 4 (400 gold, 100 guardians) and 2 
+    (300 gold, 150 guardians), the method will select the first site until there are no more
+    remaining adventurers or the guardian limit is reached.
+    - Given 3 land sites with ratios 5 (500 gold, 100 guardians), 3 (300 gold, 100 guardians), 
+    and 1 (100 gold, 100 guardians), and 150 adventurers, the method will select the first site 
+    with 100 adventurers and the second site with 50 adventurers.
+
+    - For `select_sites_from_adventure_numbers`: Given adventure numbers [30, 70, 120] and sites with
+    ratios 4 (400 gold, 100 guardians) and 2 (300 gold, 150 guardians), the method will calculate the
+    rewards based on the optimal distribution of adventurers.
+
+    - For `update_site`: Updating land site A from 400 gold and 100 guardians to 500 gold and 50 
+    guardians will change its priority in the heap and impact the site selection process accordingly.
+
+    - Complexity Explanations:
+        - Explained in each functions
     """
 
     def __init__(self, sites: list[Land], adventurers: int) -> None:

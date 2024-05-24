@@ -66,7 +66,11 @@ class Mode2Navigator:
 
     def simulate_day(self, adventurer_size: int) -> list[tuple[Land | None, int]]:
         """
-        Student-TODO: Best/Worst Case
+        Best Case is O(N) where N is the number of sites, as it would have to construct the score data sctructure
+        which is O(N) and then if every team wanted to skip
+        Worst Case is O(N + Klog(N)) where N is the number of sites and K is the number of teams, as when each
+        team chooses to pick the best site, it would have it would have to construct the score data sctructure
+        which is O(N) and for each team (K) extracting the best site, it would have to reheapify the heap
         """
         choices = []  # List to store the choices of each team
 

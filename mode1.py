@@ -32,13 +32,13 @@ class Mode1Navigator:
         selected_sites = [] # Initialise an empty list to store [land and adventurers]
         remaining_adventurers = self.adventurers
 
-        heap = MaxHeap(len(self.sites)) # Initialises another Maxheap to ensure that the original list of sites remain unchanged
+        og_heap = MaxHeap(len(self.sites)) # Initialises another Maxheap to ensure that the original list of sites remain unchanged
         for site in self.sites:
             ratio = site.get_gold() / site.get_guardians()
-            heap.add((ratio, site))
+            og_heap.add((ratio, site))
 
-        while remaining_adventurers > 0 and len(heap) > 0: # Keep looping when there are still adventurers and Lands remaining
-            ratio, best_site = heap.get_max() # Extracts Land with the largest gold to guardian ratio
+        while remaining_adventurers > 0 and len(og_heap) > 0: # Keep looping when there are still adventurers and Lands remaining
+            ratio, best_site = og_heap.get_max() # Extracts Land with the largest gold to guardian ratio
             max_adventurers_for_site = min(best_site.get_guardians(), remaining_adventurers) # Allocates the adventurers to the amount of guardians of the Land
             selected_sites.append((best_site, max_adventurers_for_site)) # Append to selected_sites 
             remaining_adventurers -= max_adventurers_for_site # Subtract the adventurers that was just allocated from the remaining adventurers
